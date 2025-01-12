@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Old School Racing Game</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Add this to your HTML file -->
+<nav class="navbar">
+    <div class="logo">
+        <img src="../assets/images/logo.png" alt="Tezzie Logo" class="logo-image">
+    </div>
+    <div class="nav-items">
+        <a href="#" class="nav-link">Login</a>
+        <a href="#" class="nav-link">Help</a>
+        <div class="hamburger-menu">
+            <button class="menu-btn">☰</button>
+            <div class="dropdown-content">
+                <a href="#">Controls</a>
+                <a href="#">Rules</a>
+            </div>
+        </div>
+    </div>
+</nav>
+<!-- Add this between your navbar and game-container -->
+<div class="rearview-mirror">
+    <div class="mirror-frame">
+        <div class="mirror-glass"></div>
+    </div>
+</div>
+
+
+    <div class="game-container">
+        <canvas id="gameCanvas" height="450" width="750"></canvas>
+    </div>
+
+    <div class="score-box">
+        <div class="score-screen">
+            <div class="score-item">
+                <span class="label">SCORE</span>
+                <span class="value" id="score">0000</span>
+            </div>
+            <div class="score-item">
+                <span class="label">TIME</span>
+                <span class="value" id="time">03:00</span>
+            </div>
+            <div class="score-item">
+                <span class="label">BATTERY</span>
+                <div class="battery-container">
+                    <div class="battery-level" id="battery-level"></div>
+                    <div class="battery-cap"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    
+    <div class="control-panel">
+        <div class="screen"></div>
+        <div class="control-buttons">
+            
+            <button class="control-btn">On</button>
+            <button class="control-btn">Off</button>
+        </div>
+    </div>
+    
+    <!-- Add this after your canvas element -->
+<div class="steering-control">
+    <img src="../assets/images/steering_wheel.png" alt="Steering Wheel" id="steeringWheel">
+</div>
+
+    <script src="script.js"></script>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="#" class="footer-link">About Me</a>
+            <div class="footer-divider">|</div>
+            <div class="copyright">
+                © <span id="current-year"></span> Junaid Khan. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+    
+</body>
+</html>
