@@ -181,7 +181,7 @@ setTimeout(function() {
   drawRoad(3, 24, 0, $.ctx.createPattern($.canvas2, 'repeat'));
   drawGround($.ctx2, $.state.offset, $.colors.roadLine, $.colors.road, $.canvas.width);
   spawnBattery();
-  // updateBatteries();
+  updateBatteries();
   drawBatteries();
   drawCar();
   drawHUD($.ctx, 630, 340, $.colors.hud);
@@ -357,14 +357,29 @@ function getCirclePoint(x, y, radius, angle) {
   }
 }
 
-function updateBatteryVisuals() {
+function updateBatteryVisuals(increase = 0) {
     const batteryElement = document.getElementById('battery-level');
+    const batteryPercentage = document.getElementById('battery-percentage');
     const screen = document.querySelector('.screen');
+
+    // Handle battery increase if specified
+    if (increase > 0) {
+        batteryLevel += increase;
+        // Make sure battery doesn't exceed 100%
+        batteryLevel = Math.min(100, batteryLevel);
+    }
+
+    // Only proceed if the elements exist
+    if (!batteryElement || !batteryPercentage) {
+        console.warn('Battery elements not found');
+        return;
+    }
     
     // Update battery width
     batteryElement.style.width = batteryLevel + '%';
 
     // Update percentage display
+    batteryPercentage.textContent = Math.round(batteryLevel) + '%';
     
     // Update colors and messages based on battery level
     if (batteryLevel > 60) {
@@ -375,6 +390,7 @@ function updateBatteryVisuals() {
         if (screen) screen.textContent = ''; // Clear message
     } else if (batteryLevel > 0) {
         batteryElement.style.backgroundColor = '#ff4444'; // Red
+        showScreenMessage('Battery Low!', '#ff4444');
     }
 }
 
@@ -1291,48 +1307,6 @@ function updateScore(decrease = false) {
 }
 
 
-// function showCrashPopup() {
-//   const currentTime = Date.now();
-  
-//   // Only process collision if enough time has passed since last collision
-//   if (currentTime - lastCollisionTime >= COLLISION_COOLDOWN) {
-//       // Get the screen element
-//       const screen = document.querySelector('.screen');
-      
-//       // Update the screen content
-//    // Show collision message
-//     screen.textContent = 'COLLISION DETECTED!';
-//     screen.style.cssText = `
-//         color: red;
-//         font-size: 24px;
-//         font-weight: bold;
-//         text-align: center;
-//         padding: 10px;
-//         background-color: rgba(255, 0, 0, 0.2);
-//     `;
-      
-//       // Subtract 5 from score
-//       score -= 5;
-      
-//       // Update the score display
-//       const scoreElement = document.getElementById('score');
-//       if (scoreElement) {
-//           scoreElement.textContent = score.toString().padStart(4, '0');
-//       }
-      
-//       // Update last collision time
-//       lastCollisionTime = currentTime;
-      
-//         // Clear the message after the cooldown period
-//         setTimeout(() => {
-//           screen.textContent = '';
-//           screen.style.cssText = '';
-//       }, COLLISION_COOLDOWN);
-//   }
-// }
-
-
-
   function drawBattery() {
     // Define battery dimensions
     const batteryWidth = 50;  // Adjust size as needed
@@ -1347,8 +1321,6 @@ function updateScore(decrease = false) {
         $.ctx.drawImage(batteryImage, batteryX, batteryY, batteryWidth, batteryHeight);
     }
 }
-
-
 
 
 class Battery {
@@ -1377,7 +1349,7 @@ update() {
       if (this.progress > 0.7 && this.progress < 0.9) { // Only check collision in this range
         if (this.checkCollision()) {
             // Handle collision
-            // updateBatteryLevel(30);
+            updateBatteryVisuals(30);
             return true; // Remove battery
         }
     }
@@ -1530,20 +1502,20 @@ function spawnBattery() {
   }
 }
 
-// function updateBatteries() {
-//   $.state.batteries = $.state.batteries.filter(battery => {
-//       if (battery.update()) return false;
+function updateBatteries() {
+  $.state.batteries = $.state.batteries.filter(battery => {
+      if (battery.update()) return false;
       
-//       // Now we don't need to pass car position since we're calculating it inside checkCollision
-//       if (battery.checkCollision()) {
-//           console.log('Battery collected!');
-//           updateBatteryLevel(30);
-//           createCollectionEffect(battery.x, battery.y);
-//           return false;
-//       }
-//       return true;
-//   });
-// }
+      // Now we don't need to pass car position since we're calculating it inside checkCollision
+      if (battery.checkCollision()) {
+          console.log('Battery collected!');
+          updateBatteryVisuals(30);
+          createCollectionEffect(battery.x, battery.y);
+          return false;
+      }
+      return true;
+  });
+}
 
 
 function drawBatteries() {
