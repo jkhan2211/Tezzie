@@ -366,7 +366,7 @@ canvas {
     background-size: 8px 8px;
     position: relative;
     overflow: hidden;
-    z-index: 1000;
+    z-index: 9999;
 }
 
 .collision-message {
@@ -417,6 +417,11 @@ canvas {
     transform: rotate(90deg);
 }
 
+#battery-percentage {
+    margin-left: 5px;
+    font-size: 0.9em;
+}
+
 .control-panel::before {
     position: absolute;
     top: -8px;
@@ -437,9 +442,15 @@ canvas {
         bottom: 250px;
     }
 
-    .screen {
-        height: 140px;  /* Adjusted screen height */
+
+    .screen-flash-red {
+        background-color: rgba(255, 0, 0, 0.3) !important;
     }
+    
+    .screen-flash-yellow {
+        background-color: rgba(255, 255, 0, 0.3) !important;
+    }
+    
 
     .control-btn {
         width: 40px;

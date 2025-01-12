@@ -140,6 +140,7 @@ $.state.batteries = [];
 $.state.lastBatteryTime = 0;
 $.state.batterySpawnInterval = 5000; // Spawn every 5 seconds
 
+const screen = document.querySelector('.control-panel .screen');
 
 
 
@@ -180,7 +181,7 @@ setTimeout(function() {
   drawRoad(3, 24, 0, $.ctx.createPattern($.canvas2, 'repeat'));
   drawGround($.ctx2, $.state.offset, $.colors.roadLine, $.colors.road, $.canvas.width);
   spawnBattery();
-  updateBatteries();
+  // updateBatteries();
   drawBatteries();
   drawCar();
   drawHUD($.ctx, 630, 340, $.colors.hud);
@@ -356,156 +357,131 @@ function getCirclePoint(x, y, radius, angle) {
   }
 }
 
+function updateBatteryVisuals() {
+    const batteryElement = document.getElementById('battery-level');
+    const screen = document.querySelector('.screen');
+    
+    // Update battery width
+    batteryElement.style.width = batteryLevel + '%';
+
+    // Update percentage display
+    
+    // Update colors and messages based on battery level
+    if (batteryLevel > 60) {
+        batteryElement.style.backgroundColor = '#32cd32'; // Green
+        if (screen) screen.textContent = ''; // Clear message
+    } else if (batteryLevel > 30) {
+        batteryElement.style.backgroundColor = '#ffd700'; // Yellow
+        if (screen) screen.textContent = ''; // Clear message
+    } else if (batteryLevel > 0) {
+        batteryElement.style.backgroundColor = '#ff4444'; // Red
+    }
+}
+
+
+
+
 function calcMovement() {
-var move = $.state.speed * 0.01,
-    newCurve = 0;
+  var move = $.state.speed * 0.01,
+      newCurve = 0;
 
-       // Check battery level before allowing movement
-       if (batteryLevel <= 0) {
-        // Stop all movement when battery is dead
-        $.state.speed = 0;
-        $.state.currentCurve = 0;
-        batteryLevel = 0;
-        batteryElement.style.width = '0%';
-        batteryElement.style.backgroundColor = '#ff4444'; // Red
-        return; // Exit the function early - this prevents any road movement
-    }
-       if($.state.keypress.up && batteryLevel > 0) {
+ // Only stop when completely depleted
+ if (batteryLevel <= 0) {
+    $.state.speed = Math.max(0, $.state.speed - $.state.car.friction * 2);
+}
+  // Handle acceleration and battery drain
+  if ($.state.keypress.up) {
+    if (batteryLevel > 0) {  // Only allow acceleration if there's battery power
         $.state.speed += $.state.car.acc - ($.state.speed * 0.015);
-        
-        // Drain battery while accelerating
-        batteryLevel -= batteryDrainRate;
-        batteryLevel = Math.max(0, batteryLevel); // Prevent negative values
-        
-        // Update battery visual
-        batteryElement.style.width = batteryLevel + '%';
-        
-        // Update battery color based on level
-        if (batteryLevel > 60) {
-            batteryElement.style.backgroundColor = '#32cd32'; // Green
-            document.querySelector('.screen').textContent = ''; // Clear message
-        } else if (batteryLevel > 30) {
-            batteryElement.style.backgroundColor = '#ffd700'; // Yellow
-            document.querySelector('.screen').textContent = ''; // Clear message
-
-        } else {
-            batteryElement.style.backgroundColor = '#ff4444'; // Red
-            showScreenMessage('Battery Low!', '#ff4444'); // Show low battery warning
-
-        }
-        
-        // Warning animation when battery is low
-        if (batteryLevel < 20) {
-            batteryElement.style.animation = 'blinking 1s infinite';
-        } else {
-            batteryElement.style.animation = 'none';
-        }
-    } else if ($.state.speed > 0) {
-        $.state.speed -= $.state.car.friction;
-        
-        // Warning animation when battery is low
-        if (batteryLevel < 20) {
-            batteryElement.style.animation = 'blinking 1s infinite';
-        } else {
-            batteryElement.style.animation = 'none';
-        }
-    } else if (batteryLevel <= 0) {
-        // Stop the car completely when battery is dead
-        $.state.speed = 0;
-        batteryLevel = 0;
-        batteryElement.style.width = '0%';
-        batteryElement.style.backgroundColor = '#ff4444'; // Red
-    } else if ($.state.speed > 0) {
-        $.state.speed -= $.state.car.friction;
-        // // Recharge battery when not accelerating
-        // if (batteryLevel < 100) {
-        //     batteryLevel += 0.05; // Adjust recharge rate as needed
-        //     batteryLevel = Math.min(100, batteryLevel);
-        //     batteryElement.style.width = batteryLevel + '%';
             
-        //     // Update color while recharging
-        //     if (batteryLevel > 60) {
-        //         batteryElement.style.backgroundColor = '#32cd32';
-        //     } else if (batteryLevel > 30) {
-        //         batteryElement.style.backgroundColor = '#ffd700';
-        //     } else {
-        //         batteryElement.style.backgroundColor = '#ff4444';
-        //     }
-        // }
+        // Drain battery
+        batteryLevel -= batteryDrainRate;
+        batteryLevel = Math.max(0, batteryLevel);
+        updateBatteryVisuals();
+
+
+         // Update the battery level display
+         const batteryElement = document.getElementById('battery-level');
+         if (batteryElement) {
+             batteryElement.style.width = batteryLevel + '%';
+         }
     }
+  } else if ($.state.speed > 0) {
+    $.state.speed -= $.state.car.friction;
+  } if(batteryLevel < 0) {
+    $.state.speed = Math.max(0, $.state.speed - $.state.car.friction * 2);
 
-if($.state.keypress.up) {
-  $.state.speed += $.state.car.acc - ($.state.speed * 0.015);
-} else if ($.state.speed > 0) {
-  $.state.speed -= $.state.car.friction;
-}
-   // Rest of your movement calculations...
-   if($.state.keypress.down && $.state.speed > 0) {
-    $.state.speed -= 1;
-}
-
-if($.state.keypress.down && $.state.speed > 0) {
-  $.state.speed -= 1;
-}
-
-// Left and right
-$.state.xpos -= ($.state.currentCurve * $.state.speed) * 0.005;
-
-if($.state.speed) {
-  if($.state.keypress.left) {
-    $.state.xpos += (Math.abs($.state.turn) + 7 + ($.state.speed > $.state.car.maxSpeed / 4 ? ($.state.car.maxSpeed - ($.state.speed / 2)) : $.state.speed)) * 0.2;
-    $.state.turn -= 1;
+  }
+  // Handle braking
+  if ($.state.keypress.down && $.state.speed > 0) {
+      $.state.speed -= 1;
   }
 
-  if($.state.keypress.right) {
-    $.state.xpos -= (Math.abs($.state.turn) + 7 + ($.state.speed > $.state.car.maxSpeed / 4 ? ($.state.car.maxSpeed - ($.state.speed / 2)) : $.state.speed)) * 0.2;
-    $.state.turn += 1;
-  }
-  
-  if($.state.turn !== 0 && !$.state.keypress.left && !$.state.keypress.right) {
-    $.state.turn += $.state.turn > 0 ? -0.25 : 0.25;
-  }
-}
-
-$.state.turn = clamp($.state.turn, -5, 5);
-$.state.speed = clamp($.state.speed, 0, $.state.car.maxSpeed);
-
-// section
-$.state.section -= $.state.speed;
-
-if($.state.section < 0) {
-  $.state.section = randomRange(1000, 9000);
-  
-  // New curve generation logic
-  if (Math.random() > 0.2) { // 80% chance of straight road
-      $.state.curve = 0;     // Force straight road
+  batteryElement.style.width = batteryLevel + '%';
+  if (batteryLevel > 60) {
+      batteryElement.style.backgroundColor = '#32cd32'; // Green
+      document.querySelector('.screen').textContent = ''; // Clear message
+  } else if (batteryLevel > 30) {
+      batteryElement.style.backgroundColor = '#ffd700'; // Yellow
+      document.querySelector('.screen').textContent = ''; // Clear message
   } else {
-      // If not straight, generate a gentler curve
-      newCurve = (Math.random() * 2 - 1) * 25; // Reduced from 50 to 25 for gentler curves
-      
-      if(Math.abs($.state.curve - newCurve) < 20) {
-          newCurve = (Math.random() * 2 - 1) * 25;
-      }
-      
-      $.state.curve = newCurve;
+      batteryElement.style.backgroundColor = '#ff4444'; // Red
   }
+
+  // Left and right movement
+  $.state.xpos -= ($.state.currentCurve * $.state.speed) * 0.005;
+
+  if ($.state.speed) {
+      if ($.state.keypress.left) {
+          $.state.xpos += (Math.abs($.state.turn) + 7 + ($.state.speed > $.state.car.maxSpeed / 4 ? ($.state.car.maxSpeed - ($.state.speed / 2)) : $.state.speed)) * 0.2;
+          $.state.turn -= 1;
+      }
+
+      if ($.state.keypress.right) {
+          $.state.xpos -= (Math.abs($.state.turn) + 7 + ($.state.speed > $.state.car.maxSpeed / 4 ? ($.state.car.maxSpeed - ($.state.speed / 2)) : $.state.speed)) * 0.2;
+          $.state.turn += 1;
+      }
+
+      if ($.state.turn !== 0 && !$.state.keypress.left && !$.state.keypress.right) {
+          $.state.turn += $.state.turn > 0 ? -0.25 : 0.25;
+      }
+  }
+
+  // Clamp values
+  $.state.turn = clamp($.state.turn, -5, 5);
+  $.state.speed = clamp($.state.speed, 0, $.state.car.maxSpeed);
+
+  // Section handling
+  $.state.section -= $.state.speed;
+
+  if ($.state.section < 0) {
+      $.state.section = randomRange(1000, 9000);
+      if (Math.random() > 0.2) {
+          $.state.curve = 0;
+      } else {
+          newCurve = (Math.random() * 2 - 1) * 25;
+          if (Math.abs($.state.curve - newCurve) < 20) {
+              newCurve = (Math.random() * 2 - 1) * 25;
+          }
+          $.state.curve = newCurve;
+      }
+  }
+
+  $.state.currentCurve += ($.state.curve - $.state.currentCurve) * 0.01;
+
+  if ($.state.currentCurve < $.state.curve && move < Math.abs($.state.currentCurve - $.state.curve)) {
+      $.state.currentCurve += move;
+  } else if ($.state.currentCurve > $.state.curve && move < Math.abs($.state.currentCurve - $.state.curve)) {
+      $.state.currentCurve -= move;
+  }
+
+  if (Math.abs($.state.xpos) > 550) {
+      $.state.speed *= 0.96;
+  }
+
+  $.state.xpos = clamp($.state.xpos, -650, 650);
 }
-$.state.currentCurve += ($.state.curve - $.state.currentCurve) * 0.01;
 
-
-
-if($.state.currentCurve < $.state.curve && move < Math.abs($.state.currentCurve - $.state.curve)) {
-  $.state.currentCurve += move;
-} else if($.state.currentCurve > $.state.curve && move < Math.abs($.state.currentCurve - $.state.curve)) {
-  $.state.currentCurve -= move;
-}
-
-if(Math.abs($.state.xpos) > 550) {
-  $.state.speed *= 0.96;
-}
-
-$.state.xpos = clamp($.state.xpos, -650, 650);
-}
 
 function keyUp(e) {
   move(e, false);
@@ -977,7 +953,7 @@ class Obstacle {
 if (collision && !this.hasCollided) {
   this.hasCollided = true;
   updateScore(-5);
-  flashScreenRed(); // Add this line
+  flashScreen('red') // Add this line
 }
 else if (!collision) {
   this.hasCollided = false;
@@ -989,11 +965,11 @@ else if (!collision) {
   
 
       // Always draw debug boxes
-      this.drawDebugBoxes(
-          playerLeft, playerTop, playerWidth, playerHeight,
-          obstacleLeft, obstacleTop, obstacleWidth, obstacleHeight,
-          collision
-      );
+      // this.drawDebugBoxes(
+      //     playerLeft, playerTop, playerWidth, playerHeight,
+      //     obstacleLeft, obstacleTop, obstacleWidth, obstacleHeight,
+      //     collision
+      // );
   
       return collision;
   }
@@ -1084,7 +1060,6 @@ update() {
 
 
 // Put this at the top level of your script.js, outside any classes
-const screen = document.querySelector('.control-panel .screen');
 
 // Add CSS for the flash effect
 const style = document.createElement('style');
@@ -1099,13 +1074,31 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-function flashScreenRed() {
-    screen.classList.add('screen-flash');
-    
-    setTimeout(() => {
-        screen.classList.remove('screen-flash');
-    }, 500);
+function flashScreen(color = 'red') {
+  // Create keyframes dynamically
+  const keyframes = `
+      @keyframes flash-${color} {
+          0% { background-color: transparent; }
+          50% { background-color: ${color === 'red' ? 'rgba(255, 0, 0, 0.3)' : 'rgba(255, 255, 0, 0.3)'}; }
+          100% { background-color: transparent; }
+      }
+  `;
+
+  // Add keyframes to document
+  const styleSheet = document.createElement('style');
+  styleSheet.textContent = keyframes;
+  document.head.appendChild(styleSheet);
+
+  // Apply animation
+  screen.style.animation = `flash-${color} 0.5s`;
+
+  // Clean up
+  setTimeout(() => {
+      screen.style.animation = '';
+      document.head.removeChild(styleSheet);
+  }, 500);
 }
+
 
 
 
@@ -1204,7 +1197,7 @@ function startCountdown() {
           setTimeout(() => {
               $.state.gameStarted = true;  // Only allow obstacles after 5 seconds
               console.log("Obstacles can now spawn!");
-          }, 5000);
+          }, 3000);
           
           startIndependentTimer();
           draw();
@@ -1255,29 +1248,30 @@ function updateScore(decrease = false) {
   const currentTime = Date.now();
   const timeDiff = currentTime - lastScoreUpdate;
   
-  // For collision-based score decrease
-  if (decrease) {
-      // Use the passed value if it's a number, otherwise use 5
-      const decreaseAmount = (typeof decrease === 'number') ? Math.abs(decrease) : 5;
-      // Decrease score by the specified amount
-      score -= decreaseAmount;
-      
-      // Prevent negative scores
-      score = Math.max(0, score);
-      
-      // Format and update score immediately
-      const formattedScore = score.toString().padStart(4, '0');
-      const scoreElement = document.getElementById('score');
-      if (scoreElement) {
-          scoreElement.textContent = formattedScore;
-      }
-      
-      console.log('Score decreased by:', decreaseAmount, 'New score:', formattedScore);
-      return;
-  }
+      // For collision-based score decrease
+      if (decrease) {
+        // Make sure decrease is treated as a number
+        const decreaseAmount = Number(decrease);
+        console.log('Decrease amount:', decreaseAmount); // Debug log
+        
+        // Decrease score
+        score -= decreaseAmount;
+        
+        // Prevent negative scores
+        score = Math.max(0, score);
+        
+        // Format and update score immediately
+        const formattedScore = score.toString().padStart(4, '0');
+        const scoreElement = document.getElementById('score');
+        if (scoreElement) {
+            scoreElement.textContent = formattedScore;
+        }
+        
+        console.log('Score decreased by:', decreaseAmount, 'New score:', score); // Debug log
+        return;
+    }
   
   // Rest of the function remains the same...
-  // Regular score increase logic
   const isMoving = (
       $.state.keypress.up || 
       $.state.keypress.down || 
@@ -1293,10 +1287,8 @@ function updateScore(decrease = false) {
       if (scoreElement) {
           scoreElement.textContent = formattedScore;
       }
-      console.log('Score updated:', formattedScore);
   }
 }
-
 
 
 // function showCrashPopup() {
@@ -1361,42 +1353,67 @@ function updateScore(decrease = false) {
 
 class Battery {
   constructor(canvas) {
-      this.width = 50;
-      this.height = 50;
-      this.canvas = canvas;
-      this.visible = true;
-      
-      this.progress = 0;
-      this.x = canvas.width / 2;
-      this.y = $.settings.skySize;
-      
+    this.canvas = canvas;
+    this.width = 50;
+    this.height = 50;
+    this.progress = 0.2;  // Start at same progress as obstacles
+    this.moveProgress = 0;
+    this.x = 0;
+    this.y = 0;
+    this.lane = '';  // 'left' or 'right'
+    this.visible = true;
+    this.lastX = 0;
+    this.lastY = 0;
+}
+
+update() {
+  const basePos = $.canvas.width + $.state.xpos;
+  const dividerPos = ((basePos + (3 + 24) / 2) / 2);
+
+  if ($.state.speed > 0) {
+      this.progress += 0.005; // Same rate as obstacles
+
+      // Handle lane movement
+      if (this.progress > 0.7 && this.progress < 0.9) { // Only check collision in this range
+        if (this.checkCollision()) {
+            // Handle collision
+            // updateBatteryLevel(30);
+            return true; // Remove battery
+        }
+    }
+    
+
+      // Calculate curve offset based on road curve
+      const curveOffset = $.state.currentCurve * (this.progress * 2);
+
+      // Maintain lane position while following road curve
+      if (this.lane === 'left') {
+          this.x = dividerPos - 100 + curveOffset; // 100 is the laneOffset
+      } else {
+          this.x = dividerPos + 100 + curveOffset; // 100 is the laneOffset
+      }
+
+      // Calculate Y position for forward movement
+      const startY = $.settings.skySize;
+      const endY = this.canvas.height;
+      this.y = startY + (endY - startY) * this.progress;
+
       this.lastX = this.x;
       this.lastY = this.y;
+      this.visible = true;
+  } else {
+      this.x = this.lastX;
+      this.y = this.lastY;
+      
+      if (this.y <= $.settings.skySize) {
+          this.visible = false;
+      }
   }
 
-  update() {
-      if ($.state.speed > 0) {
-          this.progress += 0.005;
-          
-          const startY = $.settings.skySize;
-          const endY = this.canvas.height;
-          
-          this.y = startY + (endY - startY) * this.progress;
-          
-          this.lastX = this.x;
-          this.lastY = this.y;
-          this.visible = true;
-      } else {
-          this.x = this.lastX;
-          this.y = this.lastY;
-          
-          if (this.y <= $.settings.skySize) {
-              this.visible = false;
-          }
-      }
-      
-      return this.progress >= 1;
-  }
+  return this.progress >= 1;
+}
+
+
 
   draw(ctx) {
       if (batteryImage.complete && this.visible && this.y > $.settings.skySize) {
@@ -1412,59 +1429,77 @@ class Battery {
   checkCollision(carX, carY) {
     if (!this.visible) return false;
     
-    // Get car position (adjust these values based on your car's actual size)
+    // Car dimensions - adjust these to match your car's visual size
     const carWidth = 60;
     const carHeight = 30;
     
-    // Calculate battery size with scale
+    // Calculate car position (centered on screen)
+    const carLeft = (this.canvas.width / 2) - (carWidth / 2); // Center car horizontally
+    const carRight = carLeft + carWidth;
+    const carTop = this.canvas.height - carHeight - 50; // Adjust height from bottom
+    const carBottom = carTop + carHeight;
+    
+    // Calculate battery size
     const scale = 0.3 + (this.progress * 0.7);
     const batteryWidth = this.width * scale;
     const batteryHeight = this.height * scale;
     
-    // Get car bounds
-    const carLeft = carX + (this.canvas.width / 2) - (carWidth / 2); // Adjust for center position
-    const carRight = carLeft + carWidth;
-    const carTop = this.canvas.height - carHeight - 20; // Adjust this value based on your car's height from ground
-    const carBottom = carTop + carHeight;
-    
-    // Get battery bounds
+    // Calculate battery bounds
     const batteryLeft = this.x - (batteryWidth / 2);
     const batteryRight = batteryLeft + batteryWidth;
     const batteryTop = this.y;
     const batteryBottom = this.y + batteryHeight;
     
-    // Add debug visualization (temporary)
-    $.ctx.strokeStyle = 'red';
-    $.ctx.strokeRect(carLeft, carTop, carWidth, carHeight);
-    $.ctx.strokeStyle = 'blue';
-    $.ctx.strokeRect(batteryLeft, batteryTop, batteryWidth, batteryHeight);
+    // Add debug visualization
+    if ($.settings.debug) { // Add a debug flag in your settings
+        // Draw car hitbox
+        $.ctx.strokeStyle = 'red';
+        $.ctx.lineWidth = 2;
+        $.ctx.strokeRect(carLeft, carTop, carWidth, carHeight);
+        
+        // Draw battery hitbox
+        $.ctx.strokeStyle = 'blue';
+        $.ctx.strokeRect(batteryLeft, batteryTop, batteryWidth, batteryHeight);
+        
+        // Draw collision info
+        $.ctx.fillStyle = 'white';
+        $.ctx.font = '12px Arial';
+        $.ctx.fillText(`Car: ${Math.round(carLeft)},${Math.round(carTop)}`, carLeft, carTop - 10);
+        $.ctx.fillText(`Battery: ${Math.round(batteryLeft)},${Math.round(batteryTop)}`, batteryLeft, batteryTop - 10);
+    }
     
-    // Check for collision
-    const collision = !(batteryLeft > carRight || 
-                      batteryRight < carLeft || 
-                      batteryTop > carBottom ||
-                      batteryBottom < carTop);
+    // Check for significant overlap (25% of the smaller dimension)
+    const overlapX = Math.min(carRight - batteryLeft, batteryRight - carLeft);
+    const overlapY = Math.min(carBottom - batteryTop, batteryBottom - carTop);
+    
+    // Calculate minimum required overlap
+    const minOverlapX = Math.min(carWidth, batteryWidth) * 0.25;
+    const minOverlapY = Math.min(carHeight, batteryHeight) * 0.25;
+    
+    // Check if there's significant overlap
+    const collision = overlapX > minOverlapX && 
+                     overlapY > minOverlapY && 
+                     batteryLeft < carRight && 
+                     batteryRight > carLeft && 
+                     batteryTop < carBottom && 
+                     batteryBottom > carTop;
     
     if (collision) {
-        console.log('Collision detected!');
+        console.log('Collision detected!', {
+            overlapX,
+            overlapY,
+            minOverlapX,
+            minOverlapY
+        });
     }
     
     return collision;
 }
+
 }
 
-function updateBatteryLevel(amount) {
-  batteryLevel = Math.min(100, batteryLevel + amount);
-  batteryElement.style.width = batteryLevel + '%';
-  
-  if (batteryLevel > 60) {
-      batteryElement.style.backgroundColor = '#32cd32';
-  } else if (batteryLevel > 30) {
-      batteryElement.style.backgroundColor = '#ffd700';
-  } else {
-      batteryElement.style.backgroundColor = '#ff4444';
-  }
-}
+
+
 
 
 function spawnBattery() {
@@ -1472,26 +1507,43 @@ function spawnBattery() {
   
   if (currentTime - $.state.lastBatteryTime > $.state.batterySpawnInterval) {
       if ($.state.batteries.length < 2) {
-          $.state.batteries.push(new Battery($.canvas));
+          const basePos = $.canvas.width + $.state.xpos;
+          
+          // Get divider line position (center of the pattern)
+          const dividerPos = ((basePos + (3 + 24) / 2) / 2);
+          
+          // Use same lane offset as obstacles
+          const laneOffset = 100;
+          
+          // Random lane selection
+          const lane = Math.floor(Math.random() * 2);
+          const spawnX = lane === 0 ? dividerPos - laneOffset : dividerPos + laneOffset;
+
+          const newBattery = new Battery($.canvas);
+          newBattery.x = spawnX;
+          newBattery.lane = lane === 0 ? 'left' : 'right';
+          newBattery.originalOffset = spawnX - dividerPos;
+          
+          $.state.batteries.push(newBattery);
           $.state.lastBatteryTime = currentTime;
       }
   }
 }
 
-function updateBatteries() {
-  $.state.batteries = $.state.batteries.filter(battery => {
-      if (battery.update()) return false;
+// function updateBatteries() {
+//   $.state.batteries = $.state.batteries.filter(battery => {
+//       if (battery.update()) return false;
       
-      // Now we don't need to pass car position since we're calculating it inside checkCollision
-      if (battery.checkCollision()) {
-          console.log('Battery collected!');
-          updateBatteryLevel(30);
-          createCollectionEffect(battery.x, battery.y);
-          return false;
-      }
-      return true;
-  });
-}
+//       // Now we don't need to pass car position since we're calculating it inside checkCollision
+//       if (battery.checkCollision()) {
+//           console.log('Battery collected!');
+//           updateBatteryLevel(30);
+//           createCollectionEffect(battery.x, battery.y);
+//           return false;
+//       }
+//       return true;
+//   });
+// }
 
 
 function drawBatteries() {
@@ -1520,18 +1572,34 @@ function createCollectionEffect(x, y) {
 
 
 function checkOutOfBounds() {
-  // Get the road boundaries directly from settings
-  const leftBoundary = $.settings.road.min;
-  const rightBoundary = $.settings.road.max;
+  // Get the road boundaries with the same offset as the road lines
+  const leftBoundary = $.settings.road.min + 6;  // Match the road line offset
+  const rightBoundary = $.settings.road.max + 36; // Match the road line offset
   
   // Calculate car's position relative to the road
-  // Adding canvas.width/2 to normalize the position relative to the center
   const carPosition = $.state.xpos + ($.canvas.width / 2);
+  
+  // Add debounce to prevent multiple rapid calls
+  if (!this.lastPenaltyTime) {
+      this.lastPenaltyTime = 0;
+  }
   
   // Check if car is outside road boundaries
   if (carPosition < leftBoundary || carPosition > rightBoundary) {
-      updateScore(2);
-      flashScreenRed();
+      if (Date.now() - this.lastPenaltyTime > 500) { // 500ms cooldown
+          console.log("Out of bounds - deducting 2 points"); // Debug log
+          score -= 2;
+          
+          // Update display
+          const formattedScore = score.toString().padStart(4, '0');
+          const scoreElement = document.getElementById('score');
+          if (scoreElement) {
+              scoreElement.textContent = formattedScore;
+          }
+          
+          flashScreen('yellow'); // Use yellow for out of bounds
+          this.lastPenaltyTime = Date.now();
+      }
   }
 }
 
