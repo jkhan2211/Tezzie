@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Old School Racing Game</title>
+    <title>Tez</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -13,21 +13,32 @@
         <img src="../assets/images/logo.png" alt="Tezzie Logo" class="logo-image">
     </div>
     <div class="nav-items">
-        <a href="#" class="nav-link">Login</a>
         <a href="#" class="nav-link">Help</a>
         <div class="hamburger-menu">
             <button class="menu-btn">☰</button>
             <div class="dropdown-content">
-                <a href="#">Controls</a>
-                <a href="#">Rules</a>
+                <div class="control-item">
+                    <a href="#">Controls</a>
+                    <div class="controls-submenu">
+                        Controls:<br>
+                        W, A, S, D<br>
+                        or<br>
+                        ↑, ←, ↓, →
+                    </div>
+                </div>
+                <a href="rules.html" target="_blank">Rules</a>
             </div>
         </div>
     </div>
+    
+    
 </nav>
 <!-- Add this between your navbar and game-container -->
 <div class="rearview-mirror">
     <div class="mirror-frame">
-        <div class="mirror-glass"></div>
+        <div class="mirror-glass">
+            <img src="../assets/images/cop01.png" class="cop-head" alt="cop car">
+        </div>
     </div>
 </div>
 
@@ -44,7 +55,7 @@
             </div>
             <div class="score-item">
                 <span class="label">TIME</span>
-                <span class="value" id="time">03:00</span>
+                <span class="value" id="time">02:00</span>
             </div>
             <div class="score-item">
                 <span class="label">BATTERY</span>
