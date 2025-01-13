@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tez</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <img src="../assets/images/logo.png" alt="Tezzie Logo" class="logo-image">
+        </div>
+        <div class="nav-items">
+            <a href="#" class="nav-link">Help</a>
+            <div class="hamburger-menu">
+                <button class="menu-btn">☰</button>
+                <div class="dropdown-content">
+                    <div class="control-item">
+                        <a href="homepage.html">Home</a>
+                    </div>
+                    <a href="rules.html">Rules</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Rules Section Wrapper -->
+    <div class="rules-section-wrapper">
+        <!-- Rules Heading -->
+        <h1 class="rules-heading">RULES</h1>
+
+        <!-- Rules Container -->
+        <div class="rules-container">
+            <div class="rule-section">
+                <div class="rule-title">Introduction</div>
+                <div class="rule-content">
+                    Welcome to Tez! Get ready for a thrilling, fast-paced racing experience where you navigate the challenges of EV life and race against the clock to keep your battery alive for two intense minutes. With sharp turns, unexpected surprises, and edge-of-your-seat excitement, we hope you enjoy the ride!
+                </div>
+            </div>
+
+            <div class="rule-section">
+                <div class="rule-title">Rule 1: Collect Batteries</div>
+                <div class="rule-content">
+                    Collect batteries as you progress through the game to keep your car running. If you fail to collect enough batteries, your car's power will deplete, and the game will <span class="red-text">end early</span>.
+                    <img src="../assets/images/rule_animation/rule1.gif" alt="Battery collection demonstration" class="rule-gif">
+                </div>
+            </div>
+
+            <div class="rule-section">
+                <div class="rule-title">Rule 2: Dodge Cars</div>
+                <div class="rule-content">
+                    Avoid hitting cars that come your way to keep earning points! If you crash into an obstacle car, the left side of the screen will flash red, indicating a collision. For every obstacle car you hit, you'll lose <span class="red-text">5 points</span>.
+                    <img src="../assets/images/rule_animation/rule2.gif" alt="Dodge Car demo" class="rule-gif">
+                </div>
+            </div>
+
+            <div class="rule-section">
+                <div class="rule-title">Rule 3: Stay on the Road</div>
+                <div class="rule-content">
+                    Keep your car on the road and avoid veering into the grass! If you go out of bounds, the left side of the screen will flash yellow to alert you. For every moment spent out of bounds, you'll lose <span class="red-text">2 points</span>.
+                    <img src="../assets/images/rule_animation/rule3.gif" alt="Car Boundary demo" class="rule-gif">
+                </div>
+            </div>
+
+            <div class="rule-section">
+                <div class="rule-title">Rule 4: Watch Out for the Cops</div>
+                <div class="rule-content">
+                    When a cop icon appears at the top of your rear-view mirror, it means a cop is nearby. Keep your speed below 90! If your speed exceeds 90 while the cop is around, you'll lose <span class="red-text">2 points</span>.
+                    <img src="../assets/images/rule_animation/rule3.gif" alt="Cops demo" class="rule-gif">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <a href="#" class="footer-link">About Me</a>
+            <div class="footer-divider">|</div>
+            <div class="copyright">
+                © <span id="current-year"></span> Junaid Khan. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

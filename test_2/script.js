@@ -90,7 +90,7 @@ window.addEventListener('load', () => {
 });
 
 // At the top with your other state variables
-let timeLeft = 3 * 60; // 5 minutes
+let timeLeft = 2 * 60; // 5 minutes
 let isGameStarted = false;
 let countdownValue = 4;
 let countdownTimer = null;
@@ -112,6 +112,149 @@ let timeAnimations = [];
 // Add this at the top of your script with other variables
 let lastCollisionTime = 0;
 const COLLISION_COOLDOWN = 2000; // 2 seconds cooldown
+
+
+let isGameOver = false;
+let copCarActive = true; // Track cop car state
+
+let copCarAnimation;
+
+
+function initCopCar() {
+    const copHead = document.querySelector('.cop-head');
+    const mirrorGlass = document.querySelector('.mirror-glass');
+    const mirrorWidth = mirrorGlass.offsetWidth;
+    let position = -50;
+    let movingRight = true;
+    const speed = 4;
+    let copHeadVisible = false;
+    let lastSpawnTime = 0;
+    let visibilityStartTime = 0;
+    const spawnInterval = 5000;
+    const spawnChance = 0.4;
+    const visibilityDuration = 5000;
+    let sirenColor = 'blue';
+
+
+       
+      // Initially hide the cop head
+      copHead.style.display = 'none';
+
+
+    // Create overlay for siren effect
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        opacity: 0;
+        z-index: 1000;
+    `;
+    document.body.appendChild(overlay);
+ 
+
+ 
+  
+    
+    function checkSpeedAndApplyEffects() {
+        if (copHeadVisible && $.state.speed > 34) {
+            // Toggle siren colors
+            if (sirenColor === 'blue') {
+                overlay.style.background = 'radial-gradient(rgba(0, 0, 255, 0.3), transparent)';
+                sirenColor = 'red';
+            } else {
+                overlay.style.background = 'radial-gradient(rgba(255, 0, 0, 0.3), transparent)';
+                sirenColor = 'blue';
+            }
+            overlay.style.opacity = '1';
+
+            // Apply score penalty
+            const currentTime = Date.now();
+            if (currentTime - lastPenaltyTime >= 1000) {
+                const scoreElement = document.getElementById('score');
+                let currentScore = parseInt(scoreElement.textContent);
+                currentScore = Math.max(0, currentScore - 3);
+                scoreElement.textContent = currentScore.toString().padStart(4, '0');
+                lastPenaltyTime = currentTime;
+            }
+        } else {
+            overlay.style.opacity = '0';
+        }
+    }
+
+    function animateCop() {
+
+        if (isGameOver) {
+            copHead.style.display = 'none';  // Hide the cop head
+            return;  // Stop the animation loop
+        }
+        const currentTime = Date.now();
+
+        // Check if cop head should disappear
+        if (copHeadVisible && (currentTime - visibilityStartTime > visibilityDuration)) {
+            copHeadVisible = false;
+            copHead.style.display = 'none';
+            lastSpawnTime = currentTime;
+            overlay.style.opacity = '0';
+        }
+        // Check for spawn conditions
+        if (!copHeadVisible && $.state.gameStarted && currentTime - gameStartTime > 10000) {
+            if (currentTime - lastSpawnTime > spawnInterval) {
+                lastSpawnTime = currentTime;
+                if (Math.random() < spawnChance) {
+                    copHeadVisible = true;
+                    copHead.style.display = 'block';
+                    visibilityStartTime = currentTime;
+                    position = -50;
+                    movingRight = true;
+                }
+            }
+        }
+
+        // Animate if visible
+        if (copHeadVisible) {
+            if (movingRight) {
+                position += speed;
+                copHead.style.transform = 'scaleX(1)';
+            } else {
+                position -= speed;
+                copHead.style.transform = 'scaleX(-1)';
+            }
+            
+            if (position > mirrorWidth - 50) {
+                movingRight = false;
+            } else if (position < -50) {
+                movingRight = true;
+            }
+            
+            copHead.style.left = `${position}px`;
+        }
+
+        requestAnimationFrame(animateCop);
+    }
+
+    // Start the siren effect interval
+    const sirenInterval = setInterval(checkSpeedAndApplyEffects, 500); // Check every 500ms
+
+    // Start the animation
+    animateCop();
+
+    // Return cleanup function
+    return function cleanup() {
+        clearInterval(sirenInterval);
+        overlay.remove(); // Remove the overlay instead of changing canvas style
+    };
+}
+
+
+// Initialize when document loads
+document.addEventListener('DOMContentLoaded', function() {
+    const cleanup = initCopCar();
+    $.state.cleanupCop = cleanup;
+});
 
 
 
@@ -148,6 +291,50 @@ drawBg();
 draw();
 
 function draw() {
+    if (isGameOver) {
+        // Draw game over screen
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Clear everything first
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Add dark overlay
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Set up text styling
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        const timeSpan = document.getElementById('time');
+        if (timeSpan && timeSpan.textContent === "00:00") {
+            // Game Complete text
+            ctx.font = 'bold 48px Arial';
+            ctx.fillText('Game Complete!', canvas.width / 2, canvas.height / 2 - 50);
+        } else {
+            // Battery Dead text
+            ctx.font = 'bold 48px Arial';
+            ctx.fillText('Game Over!', canvas.width / 2, canvas.height / 2 - 50);
+            ctx.font = '36px Arial';
+            ctx.fillText('Battery Dead!', canvas.width / 2, canvas.height / 2);
+        }
+        // Draw Score
+        const scoreElement = document.getElementById('score');
+        const score = scoreElement ? scoreElement.textContent : '0000';
+        ctx.font = '32px Arial';
+        ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2 + 50);
+
+        // Draw refresh message
+        ctx.font = '24px Arial';
+        ctx.fillText('Refresh page to play again', canvas.width / 2, canvas.height / 2 + 90);
+
+        // Deactivate cop car
+    copCarActive = false;
+        
+        return; // Stop the game loop
+    }
 setTimeout(function() {
   calcMovement();
 
@@ -402,8 +589,14 @@ function calcMovement() {
       newCurve = 0;
 
  // Only stop when completely depleted
+ // Only stop when completely depleted
  if (batteryLevel <= 0) {
-    $.state.speed = Math.max(0, $.state.speed - $.state.car.friction * 2);
+    console.log('Battery depleted, showing game over');
+    isGameOver = true; // Set game over state
+    $.state.speed = 0;
+    batteryLevel = 0;
+    $.state.keypress = {}; // Clear any active key presses
+    return; // Stop further processing
 }
   // Handle acceleration and battery drain
   if ($.state.keypress.up) {
@@ -796,7 +989,7 @@ function startIndependentTimer() {
       timerInterval = null;
   }
 
-  let timeLeft = 3 * 60; // 3 minute game length
+  let timeLeft = 2 * 60; // 3 minute game length
   const timeSpan = document.getElementById('time');
   
   console.log("Starting independent timer..."); // Debug log
@@ -838,6 +1031,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
 
     // Toggle dropdown on menu button click
     menuBtn.addEventListener('click', function(event) {
@@ -891,7 +1085,7 @@ class Obstacle {
         this.y = $.settings.skySize;
         
         this.image = new Image();
-        this.image.src = '../assets/images/car_up.png';
+        this.image.src = '../assets/images/car_01.png';
     }
 
        // Add collision detection method
@@ -1191,37 +1385,41 @@ function drawObstacles() {
 }
 
 function startCountdown() {
-  // Reset game state
-  isGameStarted = false;
-  isCountdownActive = true;
-  countdownValue = 4;  // Changed from 3 to 4
+    // Reset game state
+    isGameStarted = false;
+    isCountdownActive = true;
+    countdownValue = 4;  // Changed from 3 to 4
+    
+    const timeSpan = document.getElementById('time');
+    timeSpan.textContent = "02:00";
   
-  const timeSpan = document.getElementById('time');
-  timeSpan.textContent = "03:00";
-
-  function updateCountdown() {
-      if (countdownValue > 0) {
-          console.log(`Countdown: ${countdownValue}`);
-          countdownValue--;
-          setTimeout(updateCountdown, 1000);
-      } else {
-          console.log("GO!");
-          isCountdownActive = false;
-          isGameStarted = true;
-          
-          // Add 5 second delay before allowing obstacles to spawn
-          setTimeout(() => {
-              $.state.gameStarted = true;  // Only allow obstacles after 5 seconds
-              console.log("Obstacles can now spawn!");
-          }, 3000);
-          
-          startIndependentTimer();
-          draw();
-      }
+    function updateCountdown() {
+        if (countdownValue > 0) {
+            console.log(`Countdown: ${countdownValue}`);
+            countdownValue--;
+            setTimeout(updateCountdown, 1000);
+        } else {
+            console.log("GO!");
+            isCountdownActive = false;
+            isGameStarted = true;
+            
+            // Start the game timer here
+            let timerInterval = setInterval(updateTimer, 1000);
+            
+            // Add 5 second delay before allowing obstacles to spawn
+            setTimeout(() => {
+                $.state.gameStarted = true;  // Only allow obstacles after 5 seconds
+                console.log("Obstacles can now spawn!");
+            }, 3000);
+            
+            startIndependentTimer();
+            draw();
+        }
+    }
+  
+    updateCountdown();
   }
-
-  updateCountdown();
-}
+  
 
 
 
@@ -1574,4 +1772,138 @@ function checkOutOfBounds() {
       }
   }
 }
+
+
+
+function showGameOver() {
+    console.log('Showing game over screen'); // Debug log
+    
+    const canvas = document.getElementById('gameCanvas');
+    if (!canvas) {
+        console.error('Canvas not found!');
+        return;
+    }
+    console.log('Canvas found, dimensions:', canvas.width, 'x', canvas.height);
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+        console.error('Could not get canvas context!');
+        return;
+    }
+    console.log('Got canvas context');
+    
+    try {
+        // Clear the canvas first
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        console.log('Canvas cleared');
+        
+        // Add semi-transparent black overlay
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        console.log('Overlay added');
+        
+        // Set up text properties
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        // Draw "Game Over!"
+        ctx.font = 'bold 48px Arial';
+        ctx.fillText('Game Over!', canvas.width / 2, canvas.height / 2 - 50);
+        console.log('Game Over text drawn');
+        
+        // Draw "Battery Dead!"
+        ctx.font = '36px Arial';
+        ctx.fillText('Battery Dead!', canvas.width / 2, canvas.height / 2);
+        console.log('Battery Dead text drawn');
+        
+        // Get and draw score
+        const scoreElement = document.getElementById('score');
+        const score = scoreElement ? scoreElement.textContent : '0000';
+        ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2 + 50);
+        console.log('Score drawn');
+
+        ctx.fillText(`Score: ${score}`, canvas.width / 2, canvas.height / 2 + 50);
+        console.log('Score drawn');
+        
+        
+    } catch (error) {
+        console.error('Error in showGameOver:', error);
+    }
+}
+
+
+function showGameComplete() {
+    console.log('Showing game complete screen'); // Debug log
+    
+    const canvas = document.getElementById('gameCanvas');
+    if (!canvas) {
+        console.error('Canvas not found!');
+        return;
+    }
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+        console.error('Could not get canvas context!');
+        return;
+    }
+    
+    try {
+        // Clear the canvas first
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Add semi-transparent black overlay
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Set up text properties
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        // Draw "Game Complete!"
+        ctx.font = 'bold 48px Arial';
+        ctx.fillText('Game Complete!', canvas.width / 2, canvas.height / 2 - 50);
+        
+        // Get and draw score
+        const scoreElement = document.getElementById('score');
+        const score = scoreElement ? scoreElement.textContent : '0000';
+        ctx.fillText(`Final Score: ${score}`, canvas.width / 2, canvas.height / 2 + 50);
+        
+    } catch (error) {
+        console.error('Error in showGameComplete:', error);
+    }
+}
+
+function updateTimer() {
+    const timeSpan = document.getElementById('time');
+    let time = timeSpan.textContent;
+    let [minutes, seconds] = time.split(':').map(Number);
+    
+    // Check if we're about to hit zero
+    if (minutes === 0 && seconds === 0) {
+        console.log("Timer reached zero!"); // Debug log
+        isGameOver = true;  // Set game over state
+        return;
+    }
+    
+    // Decrease the time
+    if (seconds === 0) {
+        minutes--;
+        seconds = 59;
+    } else {
+        seconds--;
+    }
+    
+    // If we're going to hit zero after decreasing
+    if (minutes === 0 && seconds === 0) {
+        console.log("Timer reaching zero!"); // Debug log
+        isGameOver = true;
+        timeSpan.textContent = "00:00";
+        return;
+    }
+    
+    timeSpan.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+}
+
 
