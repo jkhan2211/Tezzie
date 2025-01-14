@@ -6,3 +6,52 @@ node_modules
 # CDK asset staging directory
 .cdk.staging
 cdk.out
+
+# Node.js modules
+node_modules/
+
+# CDK output directory
+cdk.out/
+
+# CDK context file (can contain environment-specific data)
+cdk.context.json
+
+# Build artifacts
+dist/
+*.js
+*.js.map
+*.d.ts
+
+# Logs and temporary files
+*.log
+*.tmp
+*.cache
+
+# TypeScript cache
+*.tsbuildinfo
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE and editor-specific files
+.vscode/
+.idea/
+*.suo
+*.user
+*.rsuser
+*.swp
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Dependency lock files (optional, if not committing them)
+# Uncomment the following lines if your team does not commit lock files
+package-lock.json
+yarn.lock
+
+# Sensitive files (if accidentally added to the project directory)
+*.pem
+*.key
+*.env
