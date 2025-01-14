@@ -1,0 +1,989 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    /* Modern gradient background with electric/tech colors */
+    background: linear-gradient(
+        135deg, 
+        #1a1a2e 0%,
+        #16213e 50%,
+        #0f3460 100%
+    );
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    /* Add subtle animation to background */
+    animation: gradientShift 15s ease infinite;
+    
+}
+
+/* Add this to your CSS file */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.3rem 2rem; /* Reduced padding */
+    background-color: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    height: 40px; /* Set specific height */
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logo-image {
+    height: 40px; /* Adjust height as needed */
+    width: auto; /* Maintains aspect ratio */
+    max-width: 200px; /* Adjust maximum width as needed */
+}
+
+.nav-items {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-link {
+    color: white;
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #00fff2;
+}
+
+.hamburger-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.menu-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.menu-btn:hover {
+    color: #00fff2;
+}
+
+.control-item {
+    position: relative;
+}
+/* Style for the controls submenu */
+.controls-submenu {
+    display: none;
+    position: absolute;
+    right: 100%;
+    top: 0;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #00fff2;
+    padding: 15px;
+    border: 2px solid #00fff2;
+    border-radius: 8px;
+    white-space: nowrap;
+    z-index: 2;
+    margin-right: 5px;
+}
+
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.9);
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 8px;
+}
+
+.dropdown-content a:hover .controls-submenu {
+    display: block;
+}
+
+
+
+.hamburger-menu:hover .dropdown-content {
+    display: block;
+}
+
+.controls-submenu {
+    display: none;
+    position: absolute;
+    right: 100%;
+    top: 0;
+    background-color: #000;
+    color: #00fff2;
+    padding: 15px;
+    border: 2px solid #00fff2;
+    border-radius: 8px;
+    white-space: nowrap;
+    z-index: 9999;
+}
+
+.control-item:hover .controls-submenu {
+    display: block !important; /* Force display */
+}
+
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s ease;
+    position: relative;
+
+}
+
+.dropdown-content a:hover {
+    background-color: rgba(0, 255, 242, 0.2);
+}
+
+.hamburger-menu:hover .dropdown-content {
+    display: block;
+}
+
+/* Add this to ensure the canvas doesn't overlap with the navbar */
+/* Remove the canvas margin-top */
+canvas {
+    margin-top: 0; /* Remove this if you had it */
+    position: absolute; /* Add this */
+    top: 50%; /* Add this */
+    left: 50%; /* Add this */
+    transform: translate(-50%, -50%); /* Add this */
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 1rem;
+    }
+
+    .logo {
+        display: flex;
+        align-items: center;
+    }
+
+    .nav-items {
+        gap: 1rem;
+    }
+
+    .nav-link {
+        font-size: 1rem;
+    }
+}
+
+.game-container {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 750px;
+    aspect-ratio: 16/9;
+    /* Add modern glass effect */
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Add subtle glow effect */
+    box-shadow: 0 0 20px rgba(0, 195, 255, 0.1);
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    background-color: rgba(13, 17, 23, 0.95);
+    display: block;
+    /* Add futuristic border glow */
+    box-shadow: 
+        0 0 15px rgba(0, 195, 255, 0.2),
+        inset 0 0 15px rgba(0, 195, 255, 0.1);
+    border: 1px solid rgba(0, 195, 255, 0.3);
+}
+
+/* Subtle gradient animation */
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Hover effect on game container */
+.game-container:hover {
+    box-shadow: 
+        0 0 25px rgba(0, 195, 255, 0.2),
+        0 0 15px rgba(0, 195, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .game-container {
+        width: 95%;
+        padding: 5px;
+    }
+    
+    canvas {
+        border-radius: 4px;
+    }
+}
+
+@media (orientation: portrait) {
+    .game-container {
+        width: 95%;
+        aspect-ratio: 3/4;
+    }
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    body {
+        animation: none;
+    }
+    
+    .game-container:hover {
+        box-shadow: 0 0 20px rgba(0, 195, 255, 0.1);
+    }
+}
+
+
+.steering-control {
+    position: fixed;
+    bottom: 45px;
+    left: 30px;
+    z-index: 1000;
+    width: 180px; /* Reduced from 200px */
+    height: 180px; /* Reduced from 200px */
+    touch-action: none;
+}
+#steeringWheel {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-drag: none;
+    filter: drop-shadow(0 0 10px rgba(0, 255, 242, 0.3));
+}
+
+
+/* Responsive sizing */
+@media (max-width: 768px) {
+    .steering-control {
+        width: 130px; /* Reduced from 140px */
+        height: 130px; /* Reduced from 140px */
+        bottom: 15px;
+        left: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .steering-control {
+        width: 110px; /* Reduced from 120px */
+        height: 110px; /* Reduced from 120px */
+        bottom: 10px;
+        left: 10px;
+    }
+}
+
+
+.rearview-mirror {
+    position: fixed;
+    top: 70px; /* Adjust based on your navbar height */
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 900; /* Below navbar (1000) but above other elements */
+    width: 300px; /* Adjust width as needed */
+    height: 60px; /* Adjust height as needed */
+    perspective: 400px;
+    border-radius: 5px;
+}
+
+.mirror-frame {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, #2c2c2c, #1a1a1a);
+    border-radius: 5px;
+    padding: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transform: rotateX(5deg); /* Slight tilt for 3D effect */
+}
+
+.mirror-glass {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, 
+        rgba(210, 210, 210, 0.4),
+        rgba(255, 255, 255, 0.7));
+    border-radius: 3px;
+    backdrop-filter: blur(2px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.cop-head {
+    position: absolute;
+    bottom: 0;
+    left: 0; /* Start position */
+    width: 100px; /* Adjust size as needed */
+    height: 50px; /* Adjust size as needed */
+    object-fit: contain;
+}
+
+/* Add subtle reflection effect */
+.mirror-glass::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to bottom,
+        rgba(255, 255, 255, 0.1),
+        transparent);
+    border-radius: 3px 3px 0 0;
+    pointer-events: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .rearview-mirror {
+        width: 200px;
+        height: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    .rearview-mirror {
+        width: 150px;
+        height: 30px;
+    }
+}
+
+.control-item > a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s ease;
+}
+
+
+.control-panel {
+    position: fixed;
+    bottom: 230px; /* Increased bottom value to move the control panel down */
+    left: 10px;
+    width: 240px;  /* Keep width as previously increased */
+    height: 260px;  /* Increased height */
+    background: #000000; /* Dark background */
+    border-radius: 10px;
+    padding: 15px;
+    border: 4px solid #333333; /* Darker border */
+    box-shadow: 
+        0 0 15px rgba(0, 0, 0, 0.3),
+        inset 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.screen {
+    background: #000;
+    color: #fff;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    min-height: 40px;
+    min-width: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 160px;  /* Increased screen height */
+    background: #1a1a1a; /* Darker screen background */
+    border-radius: 5px;
+    margin-bottom: 15px;
+    border: 3px solid #808080;
+    box-shadow: 
+        inset 0 0 10px rgba(0, 0, 0, 0.5),
+        0 0 15px rgba(0, 195, 255, 0.2); /* Digital screen glow */
+    background-image: 
+        linear-gradient(rgba(0, 195, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 195, 255, 0.05) 1px, transparent 1px);
+    background-size: 8px 8px;
+    position: relative;
+    overflow: hidden;
+    z-index: 9999;
+}
+
+.collision-message {
+    color: red;
+    font-size: 18px;
+    font-weight: bold;
+    text-align: center;
+    /* Position in the middle of the screen div */
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+@keyframes blink {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+}
+
+.control-buttons {
+    display: flex;
+    justify-content: space-around;
+    padding: 0 10px;
+}
+
+.control-btn {
+    width: 45px;  /* Increased button size */
+    height: 45px;  /* Increased button size */
+    border-radius: 50%;
+    border: 3px solid #333333; /* Dark border */
+    background: linear-gradient(145deg, #ffffff, #e6e6e6); /* White button */
+    box-shadow: 
+        2px 2px 5px rgba(0, 0, 0, 0.3),
+        inset 0 0 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    position: relative;
+    transform: rotate(0deg);
+    transition: transform 0.3s ease;
+}
+
+.control-btn:hover {
+    transform: rotate(45deg);
+    box-shadow: 
+        2px 2px 5px rgba(0, 0, 0, 0.3),
+        inset 0 0 10px rgba(0, 195, 255, 0.2);
+}
+
+.control-btn:active {
+    transform: rotate(90deg);
+}
+
+#battery-percentage {
+    margin-left: 5px;
+    font-size: 0.9em;
+}
+
+.control-panel::before {
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #000000;
+    padding: 0 10px;
+    font-family: 'Arial Black', sans-serif;
+    font-size: 14px;  /* Increased font size */
+    color: #ffffff; /* White text */
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Light glow effect */
+}
+
+@media (max-width: 768px) {
+    .control-panel {
+        width: 200px;  /* Adjusted for smaller screens */
+        height: 220px;  /* Adjusted for smaller screens */
+        bottom: 250px;
+    }
+
+
+    .screen-flash-red {
+        background-color: rgba(255, 0, 0, 0.3) !important;
+    }
+    
+    .screen-flash-yellow {
+        background-color: rgba(255, 255, 0, 0.3) !important;
+    }
+    
+
+    .control-btn {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    .control-panel {
+        width: 180px;
+        height: 200px;  /* Adjusted height for mobile screens */
+        bottom: 230px;
+    }
+
+    .screen {
+        height: 130px;  /* Adjusted screen height */
+    }
+
+    .control-btn {
+        width: 35px;
+        height: 35px;
+    }
+
+    .control-panel::before {
+        font-size: 12px;
+    }
+}
+
+.score-box {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 200px;
+    background: #1a1a1a;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    border: 3px solid #333;
+}
+
+.score-screen {
+    background: #0a380a;
+    padding: 15px;
+    border-radius: 5px;
+    font-family: 'Digital-7', monospace;
+    color: #32cd32;
+    text-shadow: 0 0 5px #32cd32;
+}
+
+.score-item {
+    margin-bottom: 15px;
+}
+
+.score-item:last-child {
+    margin-bottom: 0;
+}
+
+.label {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.value {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.battery-container {
+    height: 30px;
+    background: #1a1a1a;
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #32cd32;
+}
+
+.battery-level {
+    width: 100%;
+    height: 100%;
+    background: #32cd32;
+    transition: width 0.3s ease;
+}
+
+.battery-cap {
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 15px;
+    background: #32cd32;
+    border-radius: 0 3px 3px 0;
+}
+
+/* Adjust the main container to accommodate the score box */
+.game-container {
+    margin-right: 240px; /* Add space for the score box */
+}
+
+/* Add a glow effect to the screen */
+.score-screen::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        45deg,
+        rgba(50, 205, 50, 0.1),
+        transparent 40%
+    );
+    pointer-events: none;
+}
+
+.car-controls {
+    position: absolute;
+    right: 20px;
+    top: calc(50% + 140px); /* Move buttons slightly more up */
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.car-btn {
+    width: 100%;
+    height: 35px; /* Make buttons smaller */
+    border: none;
+    border-radius: 6px;
+    font-family: 'Arial Black', sans-serif;
+    font-size: 14px; /* Smaller font size */
+    font-weight: bold;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Start Button */
+.start-btn {
+    background: linear-gradient(to bottom, #2ecc71, #27ae60);
+    border: 2px solid #219a52;
+}
+
+.start-btn:hover {
+    background: linear-gradient(to bottom, #27ae60, #219a52);
+    box-shadow: 
+        0 2px 8px rgba(46, 204, 113, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Stop Button */
+.stop-btn {
+    background: linear-gradient(to bottom, #e74c3c, #c0392b);
+    border: 2px solid #a33025;
+}
+
+.stop-btn:hover {
+    background: linear-gradient(to bottom, #c0392b, #a33025);
+    box-shadow: 
+        0 2px 8px rgba(231, 76, 60, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Reset Button */
+.reset-btn {
+    background: linear-gradient(to bottom, #f1c40f, #f39c12);
+    border: 2px solid #d68910;
+}
+
+.reset-btn:hover {
+    background: linear-gradient(to bottom, #f39c12, #d68910);
+    box-shadow: 
+        0 2px 8px rgba(241, 196, 15, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+}
+
+/* Button active state */
+.car-btn:active {
+    transform: translateY(2px);
+    box-shadow: 
+        0 1px 2px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.car-btn:hover .btn-glow {
+    left: 100%;
+}
+
+/* Add media queries for responsiveness */
+@media (max-width: 768px) {
+    .car-controls {
+        width: 160px;
+    }
+    
+    .car-btn {
+        height: 30px; /* Make buttons smaller */
+        font-size: 12px; /* Smaller font size */
+    }
+}
+
+@media (max-width: 480px) {
+    .car-controls {
+        width: 140px;
+    }
+    
+    .car-btn {
+        height: 25px; /* Make buttons smaller */
+        font-size: 10px; /* Smaller font size */
+    }
+}
+
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(26, 26, 26, 0.9);
+    backdrop-filter: blur(5px);
+    padding: 15px 0;
+    z-index: 1000;
+    border-top: 2px solid #333;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 0 20px;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+
+.footer-link {
+    color: #03c2fc;
+    text-decoration: none;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+    font-weight: bold;
+}
+
+.footer-link:hover {
+    color: #03f4fc;
+    text-shadow: 0 0 8px rgba(50, 205, 50, 0.5);
+}
+
+.footer-divider {
+    color: #666;
+}
+
+.copyright {
+    color: #cccccc;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .footer-divider {
+        display: none;
+    }
+}
+
+
+.collision-flash {
+    animation: flash 0.5s;
+}
+
+@keyframes flash {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+
+
+.game-over-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 1000;
+}
+
+.rules-section-wrapper {
+    max-width: 90%;
+    margin: 0 auto;
+    padding: 20px;
+    padding-top: 80px; /* Adjust this based on your nav height */
+    padding-bottom: 80px; /* Adjust this based on total footer height (~50px + safety margin) */
+    position: relative;
+    height: calc(100vh - 160px); /* viewport height minus (nav height + footer height) */
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+
+
+.rules-heading {
+    padding-top: 20px;
+    font-size: 3rem;
+    font-weight: bold;
+    color: #f8d347;
+    text-align: center;
+    margin-bottom: 20px; /* Space between heading and the rules container */
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.rules-container {
+    font-family: 'Arial', sans-serif;
+    background-color: #1a1a1a;
+    color: #f8d347;
+    border-radius: 10px;
+    padding: 20px;
+    max-height: 800px;
+    margin: 20px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+}
+
+.rule-section {
+    margin-bottom: 20px;
+}
+
+.rule-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #f8d347;
+}
+
+.rule-content {
+    font-size: 1.2rem;
+    margin-top: 10px;
+    line-height: 1.6;
+}
+
+.red-text {
+    color: #ff4c4c;
+    font-weight: bold;
+}
+.main-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.landing-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    max-width: 1000px;
+    width: 100%;
+    padding: 0 15px;
+}
+
+.avatar-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 200px;
+}
+
+.avatar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.avatar-image {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    border: 5px solid #333;
+    border-radius: 12px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.content-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.main-logo {
+    width: 100%;
+    max-width: 250px;
+}
+
+.start-button {
+    display: inline-block;
+    padding: 12px 30px;
+    font-size: 20px;
+    background-color: #4CAF50;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    margin-left: 45px ;
+}
+
+.start-button:hover {
+    background-color: #45a049;
+    transform: scale(1.03);
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+    .landing-container {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .avatar-wrapper {
+        justify-content: center;
+    }
+
+    .content-container {
+        align-items: center;
+        text-align: center;
+    }
+
+    .avatar-image,
+    .main-logo {
+        max-width: 200px;
+    }
+
+    .start-button {
+        padding: 10px 25px;
+        font-size: 18px;
+    }
+}
